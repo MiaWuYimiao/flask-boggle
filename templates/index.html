@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Board{% endblock %}
+<link href="minimal-table.css" rel="stylesheet" type="text/css">
+
+{% block content %}
+    <table>
+    {% for row in board %}
+        <tr>
+            {% for cell in row %}
+                <td>{{cell}}</td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </table>
+    <div>
+        <form id="submit-form" method="POST">
+            <label for="guess">Give a guess</label>
+            <input type="text" name="word" id="guess">
+            <button>submit</button>
+
+        </form>
+        <p id="result"></p>
+        <p>Your score is <span id="score">0</span></p>
+        <p id="time">Time left <span id="second">60</span> s</p>
+        <div>
+            <h4>Your highest score : {{max_score}}</h4>
+            <h4>Play times : {{times}}</h4>
+        </div>
+    </div>
+{% endblock %}
+
+in branch main
