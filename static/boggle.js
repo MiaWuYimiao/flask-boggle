@@ -1,74 +1,85 @@
 $submitForm = $("#submit-form");
 
-let score = 0
-let time = 60
+class Boggle {
+    constructor(size) {
+        this.score = 0;
+        this.time = 60;
+        this.size = size;
+        this.words = new Set(); 
 
-async function submitGuess(evt) {
-    evt.preventDefault();
+        this.submitBoggleGuess = this.submitGuess.bind(this);
+        $submitForm.on("submit", this.submitBoggleGuess);
 
-    let guess = $("#guess").val();
-
-    console.log(guess)
-    if(guess === ""){
-        return;
+        this.setTime(this.time);
     }
+    
 
-    console.log(time)
-    if( time === 0 ) {
-        // Display a message says your time is out??
-        return;
-    }
+    async submitGuess(evt) {
+        evt.preventDefault();
 
-    //get response from the axios request
-    //const response = await axios.post("/submit", { "word" : guess }); // why cannot use post to get response here?
-    const response = await axios.get("/submit", { params : { "word" : guess }})
-    console.log(response.data)
+        let guess = $("#guess").val();
 
-    //check response data and display message on the page
-    if( response.data.result === "not-on-board" ){
-        msg = "The entered word is not on board.";
-    } else if ( response.data.result === "not-word" ) {
-        msg = "The entered string is not a word.";
-    } else {
-        msg = "The entered word is on board";
-        score+=1;
-    }
-    showMessage(msg);
-    showScore(score);
-}
+        console.log(guess)
+        if(!guess) return;
 
+        console.log(this.time)
+        if( this.time === 0 ) return;
 
-$submitForm.on("submit", submitGuess);
-
-function showMessage(msg) {
-    $("#result").text(msg);
-}
-
-function showScore(score) {
-    $("#score").text(score);
-}
-
-async function gameEnd() {
-    //display end of game
-    $("#time").text("Your time is out");
-
-    //post score of this game to server
-    const response = await axios.post("/update_score", { 'score' : score});
-
-}
-
-async function setTime(time) {
-    let timer = setInterval(async function(){
-        console.log(time)
-        //display time
-        $("#second").text(time)
-        time--;
-        if(time===0){
-            clearInterval(timer);
-            await gameEnd();
+        console.log(this.words.has(guess))
+        if(this.words.has(guess)) {
+            this.showMessage("The entered word has been guessed already");
+            return;
         }
-    }, 1000)
-}
 
-setTime(time);
+        //get response from the axios request
+        //const response = await axios.post("/submit", { "word" : guess }); // why cannot use post to get response here?
+        const response = await axios.get("/submit", { params : { "word" : guess }})
+        console.log(response.data)
+
+        //check response data and display message on the page
+        var msg = '';
+        if( response.data.result === "not-on-board" ){
+            msg = "The entered word is not on board.";
+        } else if ( response.data.result === "not-word" ) {
+            msg = "The entered string is not a word.";
+        } else {
+            msg = "The entered word is on board.";
+            this.score += 1;
+            this.words.add(guess);
+        }
+        this.showMessage(msg);
+        this.showScore(this.score);
+
+        $("#guess").val("").focus();
+    }
+
+    showMessage(msg) {
+        $("#result").text(msg);
+    }
+
+    showScore(score) {
+        $("#score").text(score);
+    }
+
+    async gameEnd() {
+        //display end of game
+        $("#time").text("Your time is out");
+
+        //post score of this game to server
+        const response = await axios.post("/update_score", { 'score' : this.score});
+
+    }
+
+    async setTime() {
+        let timer = setInterval(async () => {
+            //display time
+            $("#second").text(this.time)
+            this.time--;
+            if(this.time===0){
+                clearInterval(timer);
+                await this.gameEnd();
+            }
+        }, 1000)
+    }
+}
 

@@ -13,7 +13,7 @@ app.debug = True
 def display_board():
     """Generate the board and display it on board page"""
 
-    board = boggle_game.make_board()
+    board = boggle_game.make_board(5)
     
     session['board'] = board
     max_score = session.get("max_score", 0)
@@ -52,7 +52,7 @@ def update_score():
 
     import pdb
     pdb.set_trace()
-    return jsonify("True")
+    return jsonify(brokeRecord = score > max_score)
 
     
 
