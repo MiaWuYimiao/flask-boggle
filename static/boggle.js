@@ -34,7 +34,8 @@ class Boggle {
         //get response from the axios request
         //const response = await axios.post("/submit", { "word" : guess }); // why cannot use post to get response here?
         const response = await axios.get("/submit", { params : { "word" : guess }})
-        console.log(response.data)
+        console.log(`response.data ${response.data}`)
+        console.log(`response.json ${response.json}`)
 
         //check response data and display message on the page
         var msg = '';
@@ -67,7 +68,8 @@ class Boggle {
 
         //post score of this game to server
         const response = await axios.post("/update_score", { 'score' : this.score});
-
+        console.log(`response.data ${response.data}`);
+        console.log(`response.jason ${response.json}`);
     }
 
     async setTime() {
@@ -79,7 +81,7 @@ class Boggle {
                 clearInterval(timer);
                 await this.gameEnd();
             }
-        }, 1000)
+        }, 10)
     }
 }
 

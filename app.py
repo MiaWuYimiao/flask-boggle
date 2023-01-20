@@ -30,9 +30,13 @@ def check_word():
 
     #guess_word = request.form.get("word")
     guess_word = request.args.get("word")
-    board = session['board']
+    board = session.get('board',[])
 
     result = boggle_game.check_valid_word(board, guess_word)
+    #val = jsonify({"result": result})
+
+    # import pdb
+    # pdb.set_trace()
 
     #return jsonify("result", result)
     return jsonify({"result": result})
@@ -49,10 +53,11 @@ def update_score():
     session["times"] = play_times + 1
     session["max_score"] = max(max_score, score)
 
+    # val = jsonify(brokeRecord=score > max_score)
 
-    import pdb
-    pdb.set_trace()
-    return jsonify(brokeRecord = score > max_score)
+    # import pdb
+    # pdb.set_trace()
+    return jsonify({'brokeRecord':score > max_score})
 
     
 

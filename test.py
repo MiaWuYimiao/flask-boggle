@@ -1,6 +1,6 @@
 from unittest import TestCase
 from app import app
-from flask import session
+from flask import session, json
 from boggle import Boggle
 
 
@@ -31,12 +31,24 @@ class FlaskTests(TestCase):
 
     def test_invalid_word(self):
         with app.test_client() as client:
+            with client.session_transaction() as change_session:
+                change_session['board'] = [["C", "A", "T", "T", "T"], 
+                                            ["C", "A", "T", "T", "T"], 
+                                            ["C", "A", "T", "T", "T"], 
+                                            ["C", "A", "T", "T", "T"], 
+                                            ["C", "A", "T", "T", "T"]]
             resp = client.get('/submit?word=impossible')
             
             self.assertEqual(resp.json.get('result'), 'not-on-board')
 
-    def test_invalid_word(self):
+    def test_invalid_word_2(self):
         with app.test_client() as client:
+            with client.session_transaction() as change_session:
+                change_session['board'] = [["C", "A", "T", "T", "T"], 
+                                            ["C", "A", "T", "T", "T"], 
+                                            ["C", "A", "T", "T", "T"], 
+                                            ["C", "A", "T", "T", "T"], 
+                                            ["C", "A", "T", "T", "T"]]
             resp = client.get('/submit?word=fajelkjte')
             
             self.assertEqual(resp.json.get('result'), 'not-word')
@@ -48,7 +60,7 @@ class FlaskTests(TestCase):
                 change_session['times'] = 3
 
             resp = client.post('/update_score', 
-                                data={'score':'7'})
+                                json={'score':7})
 
-            self.assertEqual(resp.json.get('brokeRecord'), 'True')
+            self.assertEqual(resp.json.get('brokeRecord'), True)
                            
